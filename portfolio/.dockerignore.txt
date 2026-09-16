@@ -1,6 +1,28 @@
-.git
-.env
-.env.*
-node_modules
-vendor
-storage/logs
+FROM dunglas/frankenphp:1-php8.3
+
+WORKDIR /app
+
+RUN install-php-extensions \
+    pdo_mysql \
+    opcache \
+    zip
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY . .
+
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader
+
+RUN chown -R www-data:www-data \
+    storage \
+    bootstrap/cache
+
+COPY Caddyfile /etc/caddy/Caddyfile
+
+ENV SERVER_NAME=:80
+
+EXPOSE 80
