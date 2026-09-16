@@ -16,11 +16,11 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
-RUN php artisan optimize
-
 RUN chown -R www-data:www-data \
     storage \
     bootstrap/cache
+
+COPY Caddyfile /etc/caddy/Caddyfile
 
 ENV SERVER_NAME=:80
 
